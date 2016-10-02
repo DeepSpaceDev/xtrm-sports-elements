@@ -1,0 +1,26 @@
+{
+  "name": "xtrm-sports-elements",
+  "description": "A set of elements used in context with xtrm.sports",
+  "main": "xtrm-sports-elements.html",
+  "authors": [
+    "DeepSpace Development"
+  ],
+  "keywords": [
+    "web-components",
+    "polymer",
+    "element-collection"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/DeepSpaceDev/xtrm-sports-elements.git"
+  },
+  "ignore": [
+    "bower_components"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "paper-dialog": "PolymerElements/paper-dialog#^1.1.0",
+    "iron-overlay-behavior": "PolymerElements/iron-overlay-behavior#^1.8.6",
+    "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^1.1.5"
+  }
+}

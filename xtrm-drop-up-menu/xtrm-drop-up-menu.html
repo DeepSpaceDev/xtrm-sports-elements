@@ -1,0 +1,137 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../../iron-overlay-behavior/iron-overlay-behavior.html">
+
+<dom-module id="xtrm-drop-up-menu">
+  <template>
+    <style>
+      :host {
+        position: relative;
+        display: block;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      #dropUpContainer {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        display: none;
+        width: 100%;
+      }
+      :host.opened {
+        background: #fff;
+        border-radius: 3px;
+      }
+      :host.opened #dropUpContainer {
+        display: block;
+        background: #fff;
+        border-radius: 3px;
+      }
+      .item {
+        padding: 8px;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+      }
+      .item:hover {
+        color: var(--primary-color);
+      }
+      xtrm-button {
+        width: calc(100% - 0.57em - 0.29em);
+      }
+    </style>
+    <div id="dropUpContainer">
+      <template is="dom-repeat" items="[[dropUpItems]]">
+        <div class="item" role="menuitem" tabindex="-1" on-tap="_itemTapped">[[item.name]]</div>
+      </template>
+    </div>
+    <xtrm-button aria-haspopup="true" on-tap="toggle">[[title]]<iron-icon icon="arrow-drop-up"></iron-icon></xtrm-button>
+  </template>
+  <script>
+    (function () {
+      'use strict';
+      //TODO-dennis: Keyboard accessibility @link{http://goo.gl/8r5KV7} (WAI-ARIA Authoring Practices)
+      Polymer({
+        is: 'xtrm-drop-up-menu',
+
+        hostAttributes: {
+          role: 'menu',
+          tabindex: -1
+        },
+
+        properties: {
+          title: String,
+          dropUpItems: {
+            type: Array,
+            value: function () {
+              return [];
+            }
+          },
+          opened: {
+            type: Boolean,
+            value: false,
+            observer: '_openStateChanged'
+          }
+        },
+
+        attached: function () {
+          // document.addEventListener('click', this._closeIfOpened.bind(this), {passive: true});
+        },
+
+        dettached: function () {
+          // document.removeEventListener('click', this._closeIfOpened.bind(this), {passive: true});
+        },
+
+        _closeIfOpened: function () {
+          if (this.opened) {
+            console.log('close');
+          }
+        },
+
+        open: function () {
+          this.opened = true;
+          this._handleListeners(this.opened);
+        },
+
+        close: function () {
+          this.opened = false;
+          this._handleListeners(this.opened);
+        },
+
+        toggle: function () {
+          this.opened = !this.opened;
+          this._handleListeners(this.opened);
+        },
+
+        _handleListeners: function (opened) {
+          if (opened) {
+            document.addEventListener('click', this._closeIfOpened.bind(this), {passive: true});
+          } else {
+            document.removeEventListener('click', this._closeIfOpened.bind(this), {passive: true});
+          }
+        },
+
+        _openStateChanged: function (opened) {
+          if (opened){
+            this.classList.add('opened');
+          } else {
+            this.classList.remove('opened');
+          }
+        },
+
+        _itemTapped: function (e) {
+          console.log(e);
+          var item = e.model.__data__.item;
+          if (item.action === ACTION_LINK) {
+            this.fire('setPage', {
+              page: item.page
+            });
+          }
+          this.close();
+        }
+      });
+    })();
+  </script>
+</dom-module>

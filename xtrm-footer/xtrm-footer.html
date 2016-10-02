@@ -1,0 +1,78 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../xtrm-drop-up-menu/xtrm-drop-up-menu.html">
+
+<dom-module id="xtrm-footer">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        background: rgba(255, 255, 255, 0.5);
+        padding: 8px;
+        z-index: 1;
+      }
+
+      :host > xtrm-button,a,xtrm-drop-up-menu {
+        flex: 1 1 auto;
+      }
+      a > xtrm-button {
+        width: 100%;
+      }
+    </style>
+    <xtrm-drop-up-menu title="Countries" drop-up-items="[[supportedCountries]]"></xtrm-drop-up-menu>
+    <xtrm-drop-up-menu title="Sports" drop-up-items="[[supportedSports]]"></xtrm-drop-up-menu>
+    <a target="_blank" href="https://blog.xtrm-sports.com/" tabindex="-1">
+      <xtrm-button>Blog</xtrm-button>
+    </a>
+    <xtrm-button>Suggestions</xtrm-button>
+    <xtrm-button>Imprint</xtrm-button>
+  </template>
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'xtrm-footer',
+
+        properties: {
+          supportedCountries: {
+            type: Array,
+            value: function () {
+              return [{
+                name: 'Germany',
+                action: ACTION_LINK,
+                page: 'search/count%3AGermany'
+              }, {
+                name: 'Austria',
+                action: ACTION_LINK,
+                page: '/search/count%3AAustria'
+              }, {
+                name: 'France',
+                action: ACTION_LINK,
+                page: 'search/count%3AFrance'
+              }]
+            }
+          },
+          supportedSports: {
+            type: Array,
+            value: function () {
+              return [{
+                name: 'Climbing',
+                action: ACTION_LINK,
+                page: 'search/sport%3Aclimbing'
+              },{
+                name: 'Skiing',
+                action: ACTION_LINK,
+                page: 'search/sport%3Askiing'
+              }]
+            }
+          }
+        },
+
+        attached: function () {
+        }
+
+      });
+    })();
+  </script>
+</dom-module>

@@ -1,0 +1,175 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../../paper-dialog/paper-dialog.html">
+<link rel="import" href="../../paper-dialog-scrollable/paper-dialog-scrollable.html">
+
+<dom-module id="xtrm-login-dialog">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      paper-input {
+        width: 400px;
+      }
+
+      .button {
+        text-align: center;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+    <paper-dialog id="dialog" with-backdrop>
+      <h2>[[headline]]</h2>
+      <paper-dialog-scrollable>
+        <paper-input id="email" label="Email"></paper-input>
+        <div id="register" class="hidden">
+          <div id="generalInfos">
+            <paper-input id="firstname" label="First name"></paper-input>
+            <paper-input id="lastname" label="Last name"></paper-input>
+            <paper-input id="nickname" label="Nick name"></paper-input>
+            <label>
+              <input id="birthday" type="date">
+              Birthday
+            </label><br>
+            <div class="button">
+              <xtrm-button on-tap="moreInfos">More Infos</xtrm-button>
+            </div>
+          </div>
+          <div id="additionalInfos" class="hidden">
+            <paper-input id="telephone" label="Telephone"></paper-input>
+            <paper-input id="website" label="Website"></paper-input>
+          </div>
+        </div>
+        <div id="confirmationEmail" class="hidden">Login confirmation Email sent</div>
+        <div id="loggedIn" class="hidden">Logged In</div>
+      </paper-dialog-scrollable>
+      <div class="button">
+        <xtrm-button on-tap="loginRegister">[[buttonAction]]</xtrm-button>
+      </div>
+    </paper-dialog>
+  </template>
+  <script>
+    /// <reference path="polymer.d.ts"/>
+    //noinspection JSUnusedGlobalSymbols
+    Polymer({
+      is: 'xtrm-login-dialog',
+
+      properties: {
+        headline: {
+          type: String,
+          value: 'Login'
+        },
+        buttonAction: {
+          type: String,
+          value: 'login'
+        },
+        loginSocket: {
+          type: Object
+        }
+      },
+
+      open: function () {
+        this.$.dialog.open();
+      },
+
+      moreInfos: function () {
+        //noinspection JSUnresolvedVariable
+        this.$.additionalInfos.classList.remove('hidden');
+        this.$.dialog.notifyResize();
+      },
+
+      loginRegister: function () {
+        switch (this.buttonAction) {
+          case 'register':
+            this.register();
+            break;
+          case 'login':
+            this.loginWithEmail();
+            break;
+        }
+      },
+
+      register: function () {
+        var request = new Request(API_REGISTER_URL, {
+          method: 'POST',
+          mode: 'cors',
+          redirect: 'follow',
+          body: JSON.stringify({
+            email: this.$.email.value,
+            firstname: this.$.firstname.value
+          })
+        });
+        fetch(request).then(function(result) {
+          if (result.ok)
+            return result.json();
+        }).then(function(json) {
+          if (json.success) {
+            this.$.register.classList.add('hidden');
+            //noinspection JSUnresolvedVariable
+            this.$.additionalInfos.classList.add('hidden');
+            this.$.dialog.notifyResize();
+            this.loginWithEmail();
+          }
+        }.bind(this));
+      },
+
+      loginWithEmail: function () {
+        if (this.loginSocket && typeof this.loginSocket.close == 'function')
+          this.loginSocket.close();
+        this.loginSocket = new WebSocket(API_LOGIN_URL);
+        this.loginSocket.onopen = function () {
+          if (this.message) {
+            this.loginSocket.send(this.message);
+          }
+          this.socketOpened = true;
+        }.bind(this);
+
+        this.loginSocket.onmessage = function (e) {
+          var json = JSON.parse(e.data);
+          console.log(json);
+          if (json.register) {
+            //noinspection JSUnusedGlobalSymbols
+            this.headline = 'Please register first:';
+            this.buttonAction = 'register';
+            this.$.register.classList.remove('hidden');
+            this.$.dialog.notifyResize();
+          }
+          else { //noinspection JSUnresolvedVariable
+            if (json.emailSent) {
+              // TODO: Disable Login Button
+              //noinspection JSUnusedGlobalSymbols
+              this.headline = 'Confirmation email sent, check your inbox!';
+              this.buttonAction = 'Send again';
+              //noinspection JSUnresolvedVariable
+              this.$.confirmationEmail.classList.remove('hidden');
+              //noinspection JSUnresolvedVariable
+              this.$.loggedIn.classList.add('hidden');
+            } else if (json.success) {
+              var token = json.token;
+              console.log(token);
+              //noinspection JSUnresolvedVariable
+              this.$.confirmationEmail.classList.add('hidden');
+              //noinspection JSUnresolvedVariable
+              this.$.loggedIn.classList.remove('hidden');
+            }
+          }
+        }.bind(this);
+        var json = {
+          login: true,
+          email: this.$.email.value,
+          user_agent: window.navigator.userAgent
+        };
+        var message = JSON.stringify(json);
+        if (this.socketOpened) {
+          this.loginSocket.send(message);
+        } else {
+          this.message = message;
+        }
+      }
+    });
+  </script>
+</dom-module>
