@@ -172,6 +172,7 @@
                 this.$.confirmationEmail.classList.add('hidden');
                 //noinspection JSUnresolvedVariable
                 this.$.loggedIn.classList.remove('hidden');
+                this.fire('loggedIn', {token: token});
               }
             }
           }.bind(this);
