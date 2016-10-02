@@ -67,6 +67,7 @@
       const API_REGISTER_URL = HTML_PROTOCOL + API_BASE_URL + 'register/';
 
       var COOKIE_TOKEN = 'xtrm-token';
+      var COOKIE_EMAIL = 'xtrm-email';
       var EXPIRATION_DAYS = 30;
 
       //noinspection JSUnusedGlobalSymbols
@@ -166,6 +167,9 @@
               } else if (json.success) {
                 var token = json.token;
                 Cookies.set(COOKIE_TOKEN, token, {
+                  expires: EXPIRATION_DAYS
+                });
+                Cookies.set(COOKIE_EMAIL, this.$.email.value, {
                   expires: EXPIRATION_DAYS
                 });
                 //noinspection JSUnresolvedVariable
