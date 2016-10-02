@@ -21,6 +21,7 @@
     "polymer": "Polymer/polymer#^1.4.0",
     "paper-dialog": "PolymerElements/paper-dialog#^1.1.0",
     "iron-overlay-behavior": "PolymerElements/iron-overlay-behavior#^1.8.6",
-    "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^1.1.5"
+    "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^1.1.5",
+    "js-cookie": "^2.1.3"
   }
 }
